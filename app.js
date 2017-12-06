@@ -41,7 +41,7 @@ function queryAPI(query) {  //'query' = 'searchTerms' (defined in 'getSearchTerm
   });
 }
 
-//Renderer Function - Sorts API Results and applies them to store, calls HTML Generator Function (below)
+//Results Sorting Function - Sorts API Results and applies them to store, calls HTML Generator Function (below)
 function sortResults(results) {  //results argument called with JSONdata in queryAPI function above
   for (let i=0; i<results.items.length; i++) {
     STORE.vidThumbs.push(results.items[i].snippet.thumbnails.default.url);
@@ -49,9 +49,25 @@ function sortResults(results) {  //results argument called with JSONdata in quer
   }
   console.log(STORE.vidThumbs);
   console.log(STORE.videoURLS);
+  renderThumbnails();
 }
 
+//HTML Generator - Loop creates a <li> for each thumbnail images and returns them inside a <ul>
+function generateThumbnails() {
+  let thumbsList = [];
+  for (let i=0; i<STORE.vidThumbs.length; i++) {
+  thumbsList.push(`<li><a href="${STORE.videoURLS[i]}"><img src="${STORE.vidThumbs[i]}" alt="video thumbnail"></li>`);
+  }
+ // console.log(`<ul>${thumbsList.toString().replace(/,/g/'')}</ul>`);
+  return `<ul>${thumbsList.toString().replace(/,/g, '')}</ul>`
+}
 
+//HTML Renderers
+function renderThumbnails() {
+  let thumbView = generateThumbnails();
+  $('.js-results').html(thumbView);
+  console.log(thumbView);
+}
 
 
 
