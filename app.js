@@ -18,13 +18,20 @@ const apiKey = "AIzaSyCXea0ie5sLMSUTuJOdNrkXuk-UX61BSmw";
 //Event Listeners / Handlers
 function getSearchTerms() {
   //Calls 'queryAPI' function to query YouTube API with user's search term and default app parameters (ie maxResults);
-  $('#js-vidSearch').submit(function(event) {
+    $('#js-vidSearch').submit(function(event) {
+    STORE.vidThumbs = [];
+    STORE.videoURLS = [];
     event.preventDefault();
     let searchTerms = $('#searchTerm').val();
     console.log(`Search Term: ${searchTerms}`);
     //Calls 'queryAPI' function, passing in the value of 'searchTerm' as the functions 'query' argument
-    queryAPI(searchTerms);
-  })
+    //If statement ensures user has entered text.  Renders video thumbnails if so, otherwise renders a message to enter text
+    if (($('#searchTerm').val() !== '')) {
+      queryAPI(searchTerms);
+      } else {
+        renderTextMessage();
+      }
+    })
 }
 
 //API Query Function
@@ -47,12 +54,12 @@ function sortResults(results) {  //results argument called with JSONdata in quer
     STORE.vidThumbs.push(results.items[i].snippet.thumbnails.default.url);
     STORE.videoURLS.push('https://www.youtube.com/watch?v='+results.items[i].id.videoId);
   }
-  console.log(STORE.vidThumbs);
-  console.log(STORE.videoURLS);
   renderThumbnails();
 }
 
-//HTML Generator - Loop creates a <li> for each thumbnail images and returns them inside a <ul>
+//HTML Generators
+
+//Thumbnail Generator - Loop creates a <li> for each thumbnail images and returns them inside a <ul>
 function generateThumbnails() {
   let thumbsList = [];
   for (let i=0; i<STORE.vidThumbs.length; i++) {
@@ -62,14 +69,22 @@ function generateThumbnails() {
   return `<ul>${thumbsList.toString().replace(/,/g, '')}</ul>`
 }
 
+function generateTextMessage() {
+  let errorText = '<h3>You did not enter anything to search for!</h3>';
+  return `${errorText}`
+}
+
 //HTML Renderers
 function renderThumbnails() {
   let thumbView = generateThumbnails();
   $('.js-results').html(thumbView);
-  console.log(thumbView);
 }
 
-
-
+function renderTextMessage() {
+  let text = generateTextMessage();
+  $('.js-results').html(text);
+}
 
 //what is the format for a youTube query string?
+
+
