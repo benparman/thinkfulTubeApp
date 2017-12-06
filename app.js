@@ -1,63 +1,59 @@
 'use strict'
 
+//Initializes app once document is loaded
 $(document).ready(function() {
   getSearchTerms();
 })
 
-
-const STORE = {
+//Store's information about current application state
+let STORE = {
   vidThumbs: [],
   videoURLS: []
 }
 
-
+//Variables to store YouTube API enpdoint and API Key
 const endpoint = "https://www.googleapis.com/youtube/v3/search?";
 const apiKey = "AIzaSyCXea0ie5sLMSUTuJOdNrkXuk-UX61BSmw";
 
+//Event Listeners / Handlers
+function getSearchTerms() {
+  //Calls 'queryAPI' function to query YouTube API with user's search term and default app parameters (ie maxResults);
+  $('#js-vidSearch').submit(function(event) {
+    event.preventDefault();
+    let searchTerms = $('#searchTerm').val();
+    console.log(`Search Term: ${searchTerms}`);
+    //Calls 'queryAPI' function, passing in the value of 'searchTerm' as the functions 'query' argument
+    queryAPI(searchTerms);
+  })
+}
+
 //API Query Function
-function queryAPI(query) {
+function queryAPI(query) {  //'query' = 'searchTerms' (defined in 'getSearchTerms') which = user's search terms
   let params = {
     part: 'snippet',
     key: apiKey,
     q: query,
     maxResults: 5
   }
-  console.log($.getJSON(endpoint,params));
-  $.getJSON(endpoint, params, function(data) {
-              console.log(data.items[4].snippet.thumbnails.default.url) //example of video thumbnail from data array
-              console.log(data.items);
-    for (let i=0; i<data.items.length; i++) {
-      STORE.videoURLS.push(`https://www.youtube.com/watch?v=${data.items[i].id.videoId}`);
-      STORE.vidThumbs.push(data.items[i].snippet.thumbnails.default);
-    }
-    console.log(STORE);
-  }); //how do I write this callback function?
+  $.getJSON(endpoint, params, function(JSONdata) {  //This callback function argument works, but do not fully understand how it works
+    console.log(JSONdata);
+    sortResults(JSONdata);
+  });
 }
 
-//HTML Generators
-
-function listThumbnails() {
-  let thumbList = [];
-  for (let i=0; i<=STORE.vidThumbs.length; i++) {
-    //thumbList.push(`<li> <a href=${STORE.vidThumbs[i].url}`)
-    // console.log(STORE.vidThumbs[i].url); // WHY IS THIS UNDEFINED?
+//Renderer Function - Sorts API Results and applies them to store, calls HTML Generator Function (below)
+function sortResults(results) {  //results argument called with JSONdata in queryAPI function above
+  for (let i=0; i<results.items.length; i++) {
+    STORE.vidThumbs.push(results.items[i].snippet.thumbnails.default.url);
+    STORE.videoURLS.push('https://www.youtube.com/watch?v='+results.items[i].id.videoId);
   }
-  console.log(thumbList);
+  console.log(STORE.vidThumbs);
+  console.log(STORE.videoURLS);
 }
 
 
-//Event Listeners / Handlers
-function getSearchTerms() {
-  $('#js-vidSearch').submit(function(event) {
-    event.preventDefault();
-    let searchTerms = $('#searchTerm').val();
-    console.log('Search Term:' + searchTerms);
-    queryAPI(searchTerms);
-    listThumbnails();
-    //console.log(searchTerms);
-  })
-}
 
-console.log(STORE.vidThumbs)
+
+
 
 //what is the format for a youTube query string?
