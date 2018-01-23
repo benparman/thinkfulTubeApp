@@ -18,3 +18,7 @@ h1 {
 .captions {
   display: block;
 }
+
+.resultCountMessage {
+  padding-left: 10px;
+}

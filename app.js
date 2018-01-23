@@ -79,6 +79,7 @@ function sortResults(results) {  //results argument called with JSONdata in quer
 
 //Thumbnail Generator - Loop creates a <li> for each thumbnail images and returns them inside a <ul>
 function generateThumbnails() {
+  let vidCountText = `Displaying ${STORE.vidThumbs.length} results`;
   let thumbsList = [];
   for (let i=0; i<STORE.vidThumbs.length; i++) {
     console.log(i);
@@ -86,7 +87,9 @@ function generateThumbnails() {
       <span class = "captions">${STORE.videoTitles[i].slice(0,15)}...</span></li>`);
   }
   // console.log(`<ul>${thumbsList.toString().replace(/,/g/'')}</ul>`);
-  return `<ul class ="thumbnails">${thumbsList.toString().replace(/,/g, '')}</ul>`;
+  // Added h3 displaying number of videos returned for a11y
+  return `<div class = "resultCountMessage"><h3 alt = "${vidCountText}">${vidCountText}</h3></div>
+          <div class = "videos"><ul class ="thumbnails">${thumbsList.toString().replace(/,/g, '')}</ul></div>`;
 }
 
 function generateErrorMessagee() {
@@ -95,15 +98,13 @@ function generateErrorMessagee() {
 }
 
 function generateResultCountMessage() {
-  let vidCountText = `<h3>Displaying ${STORE.vidThumbs.length} results</h3>`;
+  
   return vidCountText;
 }
 
 //HTML Renderers
 function renderThumbnails() {
   let thumbView = generateThumbnails();
-  let text = generateResultCountMessage();
-  $('.js-message').html(text);
   $('.js-results').html(thumbView);
 }
 
